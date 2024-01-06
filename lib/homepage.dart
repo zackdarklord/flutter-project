@@ -11,12 +11,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double birdY =0;
+  //cake (fake bird XD) variables
+  static double birdY =0;
+  double initialPos = birdY;
+  double height = 0 ;
+  double time = 0 ;
+  double gravity = -4.9;
+  double velocity = 30 ;
   void jump() {
     Timer.periodic(Duration(milliseconds: 50), (timer) {
-setState(() {
-  birdY-=0.05;
+
+      height = gravity* time * time + velocity * time;
+      setState(() {
+  birdY = initialPos - height;
 });
+      //keep time going
+
+      time+=0.1;
     });
   }
   @override
@@ -24,7 +35,7 @@ setState(() {
 
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: jump,
+       onTap: jump,
       child: Scaffold(
       body:Column(
         children:[
