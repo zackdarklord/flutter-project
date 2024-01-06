@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:untitled/cake.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,14 +31,7 @@ setState(() {
           Expanded(flex:3,child: Container(color: Colors.blue,
           child: Center(child: Stack(
             children: [
-              Container(
-                child: Container(
-                  alignment: Alignment(0, birdY),
-                  width: 50,
-                  height: 50,
-                  color: Colors.yellow,
-                ),
-              )
+              MyBird(birdY: birdY,)
             ],
           )),
           )),
