@@ -9,7 +9,7 @@ import '../widgets/button.dart';
 import '../widgets/input_field.dart';
 
 class AddBDPage extends StatefulWidget {
-  const AddBDPage({Key? key}) : super(key: key);
+  const AddBDPage({super.key});
 
   @override
   State<AddBDPage> createState() => _AddBDPageState();

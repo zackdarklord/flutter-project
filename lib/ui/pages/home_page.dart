@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../controllers/Birthday_controller.dart';
-import '../../models/birthday.dart';
-import '../../services/notify_helper.dart';
 import '../size_config.dart';
 import '../theme.dart';
 import '../widgets/BD_tile.dart';
@@ -16,7 +14,7 @@ import '../widgets/button.dart';
 import 'add_BD_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -68,7 +66,6 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.cleaning_services_outlined,
               size: 24, color: Get.isDarkMode ? Colors.white : darkGreyClr),
           onPressed: () {
-            NotifyHelper().cancelAllNotifications();
             _BDController.deleteAllBD();
           },
         ),
@@ -187,11 +184,6 @@ class _HomePageState extends State<HomePage> {
                     var date = DateFormat.jm().parse(bd.startTime!);
                     var myTime = DateFormat('HH:mm').format(date);
 
-                    NotifyHelper().scheduledNotification(
-                      int.parse(myTime.toString().split(':')[0]),
-                      int.parse(myTime.toString().split(':')[1]),
-                      bd,
-                    );
                   } catch (e) {
                     print('Error parsing time: $e');
                   }
@@ -277,7 +269,7 @@ class _HomePageState extends State<HomePage> {
       {required String label,
       required Function() onTap,
       required Color clr,
-      bool isClose = false}) {
+      bool isClose = false,}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

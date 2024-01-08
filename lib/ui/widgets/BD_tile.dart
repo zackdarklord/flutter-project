@@ -6,7 +6,7 @@ import '../size_config.dart';
 import '../theme.dart';
 
 class BDTile extends StatelessWidget {
-  const BDTile(this.bd, {Key? key}) : super(key: key);
+  const BDTile(this.bd, {super.key});
 
   final Birthday bd;
 
