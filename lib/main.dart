@@ -1,3 +1,4 @@
+import 'package:bd_reminder/ui/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeServices().theme,
       title: 'Birthday Reminder',
       debugShowCheckedModeBanner: false,
-      home: const AuthScreen(),
+      home: const HomePage(),//AuthScreen(),
     );
   }
 }

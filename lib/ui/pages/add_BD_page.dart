@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
+import 'package:contacts_service/contacts_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../controllers/Birthday_controller.dart';
 import '../../models/birthday.dart';
 import '../theme.dart';
@@ -9,7 +10,7 @@ import '../widgets/button.dart';
 import '../widgets/input_field.dart';
 
 class AddBDPage extends StatefulWidget {
-  const AddBDPage({super.key});
+  const AddBDPage({Key? key}) : super(key: key);
 
   @override
   State<AddBDPage> createState() => _AddBDPageState();
@@ -19,9 +20,11 @@ class _AddBDPageState extends State<AddBDPage> {
   final BDController _BDController = Get.put(BDController());
   late TextEditingController _titleController;
   late TextEditingController _noteController;
+  late Contact _selectedContact;
 
   DateTime _selectedDate = DateTime.now();
-  String _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
+  String _startTime =
+  DateFormat('hh:mm a').format(DateTime.now()).toString();
   String _endTime = DateFormat('hh:mm a')
       .format(DateTime.now().add(const Duration(minutes: 15)))
       .toString();
@@ -38,6 +41,7 @@ class _AddBDPageState extends State<AddBDPage> {
     super.initState();
     _titleController = TextEditingController();
     _noteController = TextEditingController();
+    _selectedContact = Contact();
   }
 
   @override
@@ -50,7 +54,6 @@ class _AddBDPageState extends State<AddBDPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ignore: deprecated_member_use
       backgroundColor: context.theme.backgroundColor,
       appBar: _customAppBar(),
       body: Container(
@@ -58,9 +61,11 @@ class _AddBDPageState extends State<AddBDPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text(
-                'Ajouter un anniversaire',
-                style: headingStyle,
+              ElevatedButton(
+                onPressed: () async {
+                  await _importContact();
+                },
+                child: Text('Import Contact'),
               ),
               InputField(
                 title: 'Titre',
@@ -127,11 +132,11 @@ class _AddBDPageState extends State<AddBDPage> {
                       items: remindList
                           .map<DropdownMenuItem<String>>(
                               (int value) => DropdownMenuItem(
-                                  value: value.toString(),
-                                  child: Text(
-                                    '$value',
-                                    style: const TextStyle(color: Colors.white),
-                                  )))
+                              value: value.toString(),
+                              child: Text(
+                                '$value',
+                                style: const TextStyle(color: Colors.white),
+                              )))
                           .toList(),
                       icon: const Icon(Icons.keyboard_arrow_down,
                           color: Colors.grey),
@@ -164,11 +169,11 @@ class _AddBDPageState extends State<AddBDPage> {
                       items: repeatList
                           .map<DropdownMenuItem<String>>(
                               (String value) => DropdownMenuItem(
-                                  value: value,
-                                  child: Text(
-                                    value,
-                                    style: const TextStyle(color: Colors.white),
-                                  )))
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(color: Colors.white),
+                              )))
                           .toList(),
                       icon: const Icon(Icons.keyboard_arrow_down,
                           color: Colors.grey),
@@ -223,7 +228,6 @@ class _AddBDPageState extends State<AddBDPage> {
         ),
       ),
       elevation: 0,
-      // ignore: deprecated_member_use
       backgroundColor: context.theme.backgroundColor,
       actions: const [
         SizedBox(
@@ -239,8 +243,7 @@ class _AddBDPageState extends State<AddBDPage> {
       _addBDToDb();
       Get.back();
       _BDController.getBD(
-          date:
-              _selectedDate); // Assurez-vous que la méthode getBD est appelée ici
+          date: _selectedDate); // Assurez-vous que la méthode getBD est appelée ici
     } else if (_titleController.text.isNotEmpty ||
         _noteController.text.isNotEmpty) {
       Get.snackbar('Requis', 'Tous les champs sont requis!',
@@ -294,7 +297,7 @@ class _AddBDPageState extends State<AddBDPage> {
         Wrap(
           children: List<Widget>.generate(
             3,
-            (index) => GestureDetector(
+                (index) => GestureDetector(
               onTap: () {
                 setState(() {
                   _selectedColor = index;
@@ -306,15 +309,15 @@ class _AddBDPageState extends State<AddBDPage> {
                   backgroundColor: index == 0
                       ? primaryClr
                       : index == 1
-                          ? pinkClr
-                          : orangeClr,
+                      ? pinkClr
+                      : orangeClr,
                   radius: 14,
                   child: _selectedColor == index
                       ? const Icon(
-                          Icons.done,
-                          size: 16,
-                          color: Colors.white,
-                        )
+                    Icons.done,
+                    size: 16,
+                    color: Colors.white,
+                  )
                       : null,
                 ),
               ),
@@ -335,7 +338,7 @@ class _AddBDPageState extends State<AddBDPage> {
     if (pickedDate != null) {
       setState(() => _selectedDate = pickedDate);
     } else {
-      print('Please select correct date');
+      print('Please select the correct date');
     }
   }
 
@@ -346,10 +349,9 @@ class _AddBDPageState extends State<AddBDPage> {
       initialTime: isStartTime
           ? TimeOfDay.fromDateTime(DateTime.now())
           : TimeOfDay.fromDateTime(
-              DateTime.now().add(const Duration(minutes: 15))),
+          DateTime.now().add(const Duration(minutes: 15))),
     );
 
-    // ignore: use_build_context_synchronously
     String formattedTime = pickedTime!.format(context);
 
     if (isStartTime) {
@@ -357,7 +359,50 @@ class _AddBDPageState extends State<AddBDPage> {
     } else if (!isStartTime) {
       setState(() => _endTime = formattedTime);
     } else {
-      print('Something went wrong !');
+      print('Something went wrong!');
     }
   }
+
+  Future<void> _importContact() async {
+    var status = await Permission.contacts.request();
+
+    if (status.isGranted) {
+      Iterable<Contact> contacts = await ContactsService.getContacts();
+
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Select a contact'),
+          content: SizedBox(
+            height: 200,
+            width: 300,
+            child: ListView(
+              children: contacts.map((contact) {
+                return ListTile(
+                  title: Text('${contact.givenName} ${contact.familyName}'),
+                  onTap: () {
+                    Navigator.pop(context, contact);
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ).then((selectedContact) {
+        if (selectedContact != null) {
+          setState(() {
+            _selectedContact = selectedContact;
+            _titleController.text =
+            '${selectedContact.givenName} ${selectedContact.familyName}';
+            _noteController.text =
+            "c'est l'anniversaire de  ${selectedContact.givenName}";
+            _selectedDate = selectedContact.birthday ?? DateTime.now();
+          });
+        }
+      });
+    } else {
+      print('Contact permission denied');
+    }
+  }
+
 }
