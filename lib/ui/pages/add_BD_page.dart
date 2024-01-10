@@ -65,8 +65,29 @@ class _AddBDPageState extends State<AddBDPage> {
                 onPressed: () async {
                   await _importContact();
                 },
-                child: Text('Import Contact'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue, // Background color
+                  onPrimary: Colors.white, // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.person_add), // Icon before text
+                      SizedBox(width: 8.0),
+                      Text(
+                        'Importer un contact',
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+
               InputField(
                 title: 'Titre',
                 hint: 'Entrez titre',
@@ -394,9 +415,16 @@ class _AddBDPageState extends State<AddBDPage> {
             _selectedContact = selectedContact;
             _titleController.text =
             '${selectedContact.givenName} ${selectedContact.familyName}';
+
+            // Extract day and month from contact's birthday
+            int day = selectedContact.birthday?.day ?? 1;
+            int month = selectedContact.birthday?.month ?? 1;
+
+            // Set the selected date with the extracted day and month and current year
+            _selectedDate = DateTime(DateTime.now().year, month, day);
+
             _noteController.text =
-            "c'est l'anniversaire de  ${selectedContact.givenName}";
-            _selectedDate = selectedContact.birthday ?? DateTime.now();
+            "c'est l'anniversaire de ${selectedContact.givenName}";
           });
         }
       });
@@ -404,5 +432,6 @@ class _AddBDPageState extends State<AddBDPage> {
       print('Contact permission denied');
     }
   }
+
 
 }

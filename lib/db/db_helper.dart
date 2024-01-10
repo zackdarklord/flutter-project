@@ -59,7 +59,39 @@ class DBHelper {
   static Future<List<Map<String, dynamic>>> query() async {
     return await _db!.query(_tableName);
   }
+  Future<bool> _checkContactExists(String firstName, String lastName, String birthday) async {
+    // Fetch all contacts from the database
+    List<Map<String, dynamic>> contactsFromDb = await DBHelper.query();
 
+    // Check if the contact already exists based on first name, last name, and birthday
+    bool contactExists = contactsFromDb.any((dbContact) {
+      return dbContact['firstName'] == firstName &&
+          dbContact['lastName'] == lastName &&
+          dbContact['birthday'] == birthday;
+    });
+
+    return contactExists;
+  }
+  static Future<bool> contactExists(String firstName, String lastName, String birthday) async {
+    try {
+      int count = Sqflite.firstIntValue(await _db!.rawQuery(
+        'SELECT COUNT(*) FROM $_tableName WHERE title = ? AND note = ? AND date = ?',
+        [
+          '$firstName $lastName',
+          "It's $firstName's birthday",
+          _formatBirthday(birthday),
+        ],
+      ))!;
+      return count > 0;
+    } catch (e) {
+      developer.log(e.toString(), name: 'DB');
+      return false;
+    }
+  }
+
+  static String _formatBirthday(String birthday) {
+    return birthday;
+  }
   static Future<int> update(int id) async {
     return await _db!.rawUpdate('''
     UPDATE $_tableName
