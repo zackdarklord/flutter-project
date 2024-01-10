@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           _addBDBar(),
           _addDateBar(),
+          _calendar_view(),
           const SizedBox(
             height: 6,
           ),
@@ -107,6 +108,35 @@ class _HomePageState extends State<HomePage> {
                 _BDController.getBD(date: _selectedDate);
               }),
         ],
+      ),
+    );
+  }
+
+  _calendar_view() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 10, top: 10),
+      child: TableCalendar(
+        firstDay: DateTime(DateTime.now().year - 5),
+        lastDay: DateTime(DateTime.now().year + 5),
+        focusedDay: _selectedDate,
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        calendarStyle: const CalendarStyle(
+          selectedTextStyle: TextStyle(color: Colors.lightBlue),
+          todayDecoration: BoxDecoration(
+            color: Colors.blue,
+            shape: BoxShape.circle,
+          ),
+        ),
+        headerStyle: HeaderStyle(
+          formatButtonTextStyle: TextStyle().copyWith(color: Colors.white),
+          formatButtonDecoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+        ),
+        onDaySelected: (DateTime selectedDate, DateTime focusedDay) {
+          _handleDateChange(selectedDate);
+        },
       ),
     );
   }
