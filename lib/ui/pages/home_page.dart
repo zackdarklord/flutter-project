@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
 import '../../controllers/Birthday_controller.dart';
 import '../../models/birthday.dart';
 import '../../services/notify_helper.dart';
@@ -14,6 +13,7 @@ import '../theme.dart';
 import '../widgets/BD_tile.dart';
 import '../widgets/button.dart';
 import 'add_BD_page.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,6 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   DateTime _selectedDate = DateTime.now();
   final BDController _BDController = Get.put(BDController());
 
@@ -94,13 +95,13 @@ class _HomePageState extends State<HomePage> {
                 style: subHeadingStyle,
               ),
               Text(
-                'Aujoudhui',
+                'Aujourd\'hui',
                 style: subHeadingStyle,
               ),
             ],
           ),
           MyButton(
-              label: '+ Ajouter Anniversaire',
+              label: 'Ajouter Anniversaire',
               onTap: () async {
                 await Get.to(() => const AddBDPage());
                 _BDController.getBD(date: _selectedDate);
