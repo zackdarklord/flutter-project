@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -226,8 +227,18 @@ class _AddBDPageState extends State<AddBDPage> {
                   _colorPalette(),
                   MyButton(
                       label: 'créer anniversaire',
-                      onTap: () {
+                      onTap: () async {
+                        final Email email = Email(
+                          body: 'Email body',
+                          subject: 'Email subject',
+                          recipients: ['slim187@outlook.fr'],
+
+                          isHTML: false,
+                        );
+
+                        await FlutterEmailSender.send(email);
                         _validateData();
+
                       }),
                 ],
               ),
