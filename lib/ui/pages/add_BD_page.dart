@@ -232,7 +232,12 @@ class _AddBDPageState extends State<AddBDPage> {
                     label: 'Créer anniversaire',
                     onTap: () async {
                       // Send email using mailer package
-                     await sendEmail(context,);
+                     await sendEmail(context,
+                       "vous avez ajouté l'anniversaire de ",
+                       _selectedDate,
+                       _selectedContact.givenName ?? 'Unknown',
+                       _noteController.text,
+                     );
 
                       // Continue with other actions
                       _validateData();
