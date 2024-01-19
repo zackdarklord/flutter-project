@@ -433,7 +433,7 @@ class _AddBDPageState extends State<AddBDPage> {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('refus de permission'),
+          title: Text('Refus de permission'),
           content: Text(
             'Vous avez refusé l\'accès aux contacts. '
                 'Pour utiliser cette fonctionnalité, veuillez accorder la permission dans les paramètres de l\'application.',
@@ -450,6 +450,33 @@ class _AddBDPageState extends State<AddBDPage> {
                 if (newStatus.isGranted) {
                   // Si l'autorisation est accordée, continuez le processus d'importation.
                   _importContact();
+                } else {
+                  // Afficher un autre dialogue pour inviter l'utilisateur à vérifier les paramètres de l'application
+                  await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Changement de permission'),
+                      content: Text(
+                        'Si vous souhaitez changer les permissions, veuillez aller dans les paramètres de l\'application.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            // Ouvrir les paramètres de l'application
+                            openAppSettings();
+                            Navigator.pop(context); // Fermer le dialogue actuel
+                          },
+                          child: Text('Ouvrir les paramètres'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Annuler'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  // Après avoir appuyé sur "OK", ne pas rappeler _importContact() ici
                 }
               },
               child: Text('Réessayer'),
@@ -457,11 +484,35 @@ class _AddBDPageState extends State<AddBDPage> {
           ],
         ),
       );
-    } else {
+    } else if (status.isPermanentlyDenied) {
       // L'utilisateur a refusé l'autorisation avec la possibilité de ne plus demander, gérer en conséquence.
-      print('Contact permission denied permanently');
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Refus de permission permanent'),
+          content: Text(
+            'Vous avez refusé l\'accès aux contacts de manière permanente. '
+                'Veuillez autoriser l\'accès dans les paramètres de l\'application.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Ouvrir les paramètres de l'application
+                openAppSettings();
+                Navigator.pop(context); // Fermer le dialogue actuel
+              },
+              child: Text('Ouvrir les paramètres'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Annuler'),
+            ),
+          ],
+        ),
+      );
     }
   }
+
 
 
 
