@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
+import "dart:developer" as developer;
 
 class BiometricsService {
   static final BiometricsService _instance = BiometricsService._internal();
@@ -30,7 +31,8 @@ class BiometricsService {
         ),
       );
       return didAuthenticate;
-    } on PlatformException {
+    }  on PlatformException catch (e, stackTrace) {
+      developer.log('Error during authentication: $e', name: "AUTH");
       return false;
     }
   }

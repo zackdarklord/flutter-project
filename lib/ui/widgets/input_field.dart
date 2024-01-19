@@ -6,12 +6,12 @@ import '../theme.dart';
 
 class InputField extends StatelessWidget {
   const InputField({
-    Key? key,
+    super.key,
     required this.title,
     required this.hint,
     this.controller,
     this.widget,
-  }) : super(key: key);
+  });
 
   final String title;
   final String hint;
