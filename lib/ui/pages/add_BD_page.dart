@@ -428,10 +428,41 @@ class _AddBDPageState extends State<AddBDPage> {
           });
         }
       });
+    } else if (status.isDenied) {
+      // L'utilisateur a refusé l'autorisation, afficher une boîte de dialogue explicative
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('refus de permission'),
+          content: Text(
+            'Vous avez refusé l\'accès aux contacts. '
+                'Pour utiliser cette fonctionnalité, veuillez accorder la permission dans les paramètres de l\'application.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('OK'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Redemandez l'autorisation après que l'utilisateur a appuyé sur "OK"
+                var newStatus = await Permission.contacts.request();
+                if (newStatus.isGranted) {
+                  // Si l'autorisation est accordée, continuez le processus d'importation.
+                  _importContact();
+                }
+              },
+              child: Text('Réessayer'),
+            ),
+          ],
+        ),
+      );
     } else {
-      print('Contact permission denied');
+      // L'utilisateur a refusé l'autorisation avec la possibilité de ne plus demander, gérer en conséquence.
+      print('Contact permission denied permanently');
     }
   }
+
 
 
 }
