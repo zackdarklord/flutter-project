@@ -1,3 +1,4 @@
+import 'package:bd_reminder/ui/pages/sendMail.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -74,7 +75,8 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(Icons.cleaning_services_outlined,
               size: 24, color: Get.isDarkMode ? Colors.white : darkGreyClr),
           onPressed: () {
-            _BDController.deleteAllBD();
+            sendEmail(context, "vous avez supprimé tout les anniversaires ! ",DateTime.now(), " ", " ");
+        //    _BDController.deleteAllBD();
           },
         ),
         const SizedBox(

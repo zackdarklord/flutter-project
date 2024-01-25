@@ -1,8 +1,12 @@
+import 'dart:io'; // Add this import for File
+import 'package:bd_reminder/ui/pages/sendMail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import '../../controllers/Birthday_controller.dart';
 import '../../models/birthday.dart';
 import '../theme.dart';
@@ -225,10 +229,20 @@ class _AddBDPageState extends State<AddBDPage> {
                 children: [
                   _colorPalette(),
                   MyButton(
-                      label: 'créer anniversaire',
-                      onTap: () {
-                        _validateData();
-                      }),
+                    label: 'Créer anniversaire',
+                    onTap: () async {
+                      // Send email using mailer package
+                     await sendEmail(context,
+                       "vous avez ajouté l'anniversaire de ",
+                       _selectedDate,
+                       _selectedContact.givenName ?? 'Unknown',
+                       _noteController.text,
+                     );
+
+                      // Continue with other actions
+                      _validateData();
+                    },
+                  ),
                 ],
               ),
             ],
@@ -351,10 +365,11 @@ class _AddBDPageState extends State<AddBDPage> {
 
   Future<void> _getDateFromUser() async {
     DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: _selectedDate,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2015),
+      lastDate: DateTime(2050),
+    );
 
     if (pickedDate != null) {
       setState(() => _selectedDate = pickedDate);
@@ -512,8 +527,6 @@ class _AddBDPageState extends State<AddBDPage> {
       );
     }
   }
-
-
 
 
 }
