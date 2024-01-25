@@ -12,22 +12,28 @@ import '../widgets/BD_tile.dart';
 import '../widgets/button.dart';
 import 'add_BD_page.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
+  DateTime _focusedDay = DateTime.now();
   DateTime _selectedDate = DateTime.now();
-  final BDController _BDController = Get.put(BDController());
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
+  final BDController _BDController = Get.put(BDController());
+  bool isDateHovered = false;
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting().then((_) => runApp(_HomePageState() as Widget));
+    _focusedDay = _selectedDate;
     _BDController.getBD();
   }
 
@@ -47,8 +53,8 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           _addBDBar(),
-          _addDateBar(),
-          _calendar_view(),
+          //_addDateBar(),
+          _calendarView(),
           const SizedBox(
             height: 6,
           ),
@@ -109,13 +115,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _calendar_view() {
+  _calendarView() {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 10, top: 10),
       child: TableCalendar(
         firstDay: DateTime(DateTime.now().year - 5),
         lastDay: DateTime(DateTime.now().year + 5),
-        focusedDay: _selectedDate,
+        focusedDay: _focusedDay, // Utilisez _focusedDay au lieu de _selectedDate
         startingDayOfWeek: StartingDayOfWeek.monday,
         calendarStyle: const CalendarStyle(
           selectedTextStyle: TextStyle(color: Colors.lightBlue),
@@ -125,18 +131,36 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         headerStyle: HeaderStyle(
-          formatButtonTextStyle: TextStyle().copyWith(color: Colors.white),
+          formatButtonTextStyle: const TextStyle().copyWith(color: Colors.white),
           formatButtonDecoration: BoxDecoration(
             color: Colors.blue,
             borderRadius: BorderRadius.circular(20.0),
           ),
         ),
-        onDaySelected: (DateTime selectedDate, DateTime focusedDay) {
-          _handleDateChange(selectedDate);
+        selectedDayPredicate: (day) {
+          return isSameDay(_selectedDate, day);
         },
+        onDaySelected: (selectedDay, focusedDay) {
+          _handleDateChange(selectedDay);
+        },
+        onPageChanged: (focusedDay) {
+          if (focusedDay.month != _selectedDate.month) {
+            setState(() {
+              _focusedDay = focusedDay;
+              _BDController.getBD(date: _selectedDate);
+            });
+          }
+        },
+        onFormatChanged: (format) {
+          setState(() {
+            _calendarFormat = format;
+          });
+        },
+        locale: 'fr_FR',
       ),
     );
   }
+
 
   _addDateBar() {
     return Container(
